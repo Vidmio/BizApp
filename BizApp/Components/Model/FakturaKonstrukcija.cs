@@ -13,5 +13,6 @@ namespace BizApp.Components.Model
         public int FakturaID { get; set; }
         [ForeignKey("FakturaID")]
         public Faktura Faktura { get; set; }
+        public ICollection<Stavka> Stavka { get; set; }
     }
 }

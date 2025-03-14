@@ -19,5 +19,6 @@ namespace BizApp.Components.Model
         [ForeignKey("GrupaProizvodID")]
         public GrupaProizvod GrupaProizvod { get; set; }
 
+        public ICollection<Stavka> Stavka { get; set; }
     }
 }

@@ -20,6 +20,7 @@ builder.Services.AddScoped<IGenericRepository<Faktura>, FakturaRepository>();//o
 builder.Services.AddScoped<IGenericRepository<Proizvod>, ProizvodRepository>();//ovo je za GET sa include
 builder.Services.AddScoped<IGenericRepository<Konstrukcija>, GenericRepository<Konstrukcija>>();
 builder.Services.AddScoped<IGenericRepository<FakturaKonstrukcija>, FakturaKonstrukcijaRepository>();//ovo je za GET sa include
+builder.Services.AddScoped<IGenericRepository<Stavka>, StavkaRepository>();
 
 builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("DataConnectionString"), sqlServerOptions => sqlServerOptions.CommandTimeout(120)),

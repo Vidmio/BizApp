@@ -7,6 +7,8 @@
 @inject NotificationService NotificationService
 @inject DialogService DialogService
 @inject IGenericRepository<FakturaKonstrukcija> Repository
+@inject NavigationManager NavigationManager 
+
 <RadzenDataGrid Data="@fakturaKonstrukcije"
                 TItem="FakturaKonstrukcija"
                 AllowFiltering="true"
@@ -18,7 +20,12 @@
         <RadzenButton ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Button" Text="DODAJ" Icon="add" class="mb-2" Click="ShowInsertForm"  />
     </HeaderTemplate>
     <Columns>
-        <RadzenDataGridColumn TItem="FakturaKonstrukcija" Property="ID" Title="ID" Filterable="true" Width="100px"/>
+        <RadzenDataGridColumn TItem="FakturaKonstrukcija" Width="30px" Title="ID" TextAlign="TextAlign.End" Filterable="false" Sortable="false" Pickable="false">
+            <Template Context="context">
+                <RadzenButton ButtonStyle="ButtonStyle.Info" Variant="Variant.Flat" Shade="Shade.Lighter" Icon="info" class="rz-m-1" Click=@(() => OpenDetail(context.ID)) Text="@context.ID.ToString()" />
+            </Template>
+        </RadzenDataGridColumn>
+        @* <RadzenDataGridColumn TItem="FakturaKonstrukcija" Property="ID" Title="ID" Filterable="true" Width="100px"/> *@
         <RadzenDataGridColumn TItem="FakturaKonstrukcija" Property="FakturaID" Title="Fakutra" Filterable="true" Width="100px" />
         <RadzenDataGridColumn TItem="FakturaKonstrukcija" Property="Konstrukcija.Naziv" Title="Konstrukcija" Filterable="true" Width="100px" />
         <RadzenDataGridColumn TItem="FakturaKonstrukcija" Width="80px" TextAlign="TextAlign.End" Filterable="false" Sortable="false" Pickable="false">
@@ -139,6 +146,11 @@
         }
 
     }
+    async Task OpenDetail(int ID)
+    {
+        NavigationManager.NavigateTo("Stavke/" + ID);
+    }
+
 
     protected async Task Delete(FakturaKonstrukcija del)
     {
