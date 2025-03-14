@@ -1,0 +1,80 @@
+﻿﻿﻿@using Repository.Interface
+@using Model
+
+@inject NotificationService NotificationService
+@inject DialogService DialogService
+@inject IGenericRepository<Faktura> Repository
+@inject IGenericRepository<Klijent> KlijentRepository
+
+<RadzenTemplateForm TItem="Faktura" Data="@obj" Submit="SaveForm">
+    <RadzenFieldset Text="Osnovni podaci">
+        <RadzenRow AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" RowGap="1rem">
+            <RadzenColumn Size="12">
+                <RadzenFormField Text="KlijentID" Style="width: 100%">
+                    <ChildContent>
+                        <RadzenDropDown @bind-Value="obj.KlijentID" Data=@klijent TextProperty="Naziv" ValueProperty="ID" />
+                    </ChildContent>
+                </RadzenFormField>
+            </RadzenColumn>
+            <RadzenColumn Size="12">
+                <RadzenFormField Text="Datum" Style="width: 100%">
+                    <ChildContent>
+                        <RadzenDatePicker @bind-Value="obj.Datum" />
+                    </ChildContent>
+                </RadzenFormField>
+            </RadzenColumn>
+        </RadzenRow>
+    </RadzenFieldset>
+
+    <RadzenRow JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Center" class="rz-mt-4">
+        <RadzenColumn Size="6" class="rz-text-align-end">
+            <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Primary" Icon="save" Text="Sačuvaj" />
+        </RadzenColumn>
+        <RadzenColumn Size="6" class="rz-text-align-start">
+            <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Light" Icon="cancel" Style="display: inline-block; margin-left: 10px;" Text="Poništi" Click="Close" />
+        </RadzenColumn>
+    </RadzenRow>
+
+</RadzenTemplateForm>
+
+
+@code {
+    [Parameter]
+    public int ID { get; set; }
+    [Parameter]
+    public int? IDkk { get; set; }
+
+    public Faktura obj = new Faktura();
+
+    protected IEnumerable<Klijent> klijent;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (ID != 0)
+        {
+            obj = await Repository.Get(ID);
+        }
+        klijent = await KlijentRepository.Get();
+    }
+
+    public void SaveForm()
+    {
+        if (ID != 0)
+        {
+            bool result = Repository.Update(obj);
+            DialogService.Close(result);
+        }
+        else
+        {
+            @*autor.ID = Guid.NewGuid();*@
+            bool result = Repository.Add(obj);
+            DialogService.Close(result);
+        }
+
+    }
+
+    public void Close()
+    {
+        DialogService.Close();
+    }
+}

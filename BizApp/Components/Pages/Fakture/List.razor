@@ -1,0 +1,148 @@
+﻿@page "/Fakture"
+@using Repository.Interface
+@using Model
+
+@inject NotificationService NotificationService
+@inject DialogService DialogService
+@inject IGenericRepository<Faktura> Repository
+@inject NavigationManager NavigationManager 
+
+<RadzenDataGrid 
+    @bind-Value="@Selected" 
+    Data="@fakture" 
+    TItem="Faktura" 
+    AllowFiltering="true" 
+    FilterMode="FilterMode.Simple" 
+    AllowSorting="true" 
+    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive">
+    <HeaderTemplate>
+        <RadzenText TextStyle="TextStyle.DisplayH4">Fakture</RadzenText>
+        <RadzenButton ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Button" Text="DODAJ" Icon="add" class="mb-2" Click="ShowInsertForm" />
+    </HeaderTemplate>
+    <Columns>
+        <RadzenDataGridColumn TItem="Faktura" Width="30px" Title="ID" TextAlign="TextAlign.End" Filterable="false" Sortable="false" Pickable="false">
+            <Template Context="context">
+                <RadzenButton ButtonStyle="ButtonStyle.Info" Variant="Variant.Flat" Shade="Shade.Lighter" Icon="info" class="rz-m-1" Click=@(() => OpenDetail(context.ID)) Text="@context.ID.ToString()" />
+            </Template>
+        </RadzenDataGridColumn>
+       @*  <RadzenDataGridColumn TItem="Faktura" Property="ID" Title="ID" Filterable="true" Width="100px" /> *@
+        <RadzenDataGridColumn TItem="Faktura" Property="Datum" Title="Datum" Filterable="true" Width="100px" />
+        <RadzenDataGridColumn TItem="Faktura" Property="Klijent.Naziv" Title="Klijent" Filterable="true" Width="100px" />
+        <RadzenDataGridColumn TItem="Faktura" Width="80px" TextAlign="TextAlign.End" Filterable="false" Sortable="false" Pickable="false">
+            <Template Context="context">
+                <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Primary" Icon="edit" Size="ButtonSize.ExtraSmall" Click="@(() => ShowUpdateForm(context))" />
+                <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Secondary" Icon="delete" Size="ButtonSize.ExtraSmall" Click="@(() => Delete(context))" />
+                 </Template>
+        </RadzenDataGridColumn>
+    </Columns>
+</RadzenDataGrid>
+
+
+@* <RadzenCard Variant="Variant.Outlined" Style="height: 100%;">
+    <RadzenStack Gap="1rem">
+        <RadzenCard Variant="Variant.Text" class="rz-background-color-primary-lighter rz-color-on-primary-lighter">
+            Company:
+            <b>@Selected.FirstOrDefault()?.Customer?.CompanyName</b>
+        </RadzenCard>
+        <RadzenTabs>
+            <Tabs>
+                <RadzenTabsItem Text="Products">
+                    <RadzenDataList WrapItems="true" AllowPaging="true" Data="@(Selected.FirstOrDefault()?.OrderDetails)" PageSize="10">
+                        <Template Context="detail">
+                            <RadzenCard Variant="Variant.Outlined" Style="width:100px; height:100px">
+                                <RadzenBadge Shade="Shade.Lighter" BadgeStyle="BadgeStyle.Info" Text="Product" class="rz-mb-1" />
+                                <RadzenText TextStyle="TextStyle.H6" TagName="TagName.P">@detail?.Product?.ProductName</RadzenText>
+                            </RadzenCard>
+                        </Template>
+                    </RadzenDataList>
+                </RadzenTabsItem>
+            </Tabs>
+        </RadzenTabs>
+    </RadzenStack>
+</RadzenCard> *@
+
+
+@code {
+    public List<Faktura> fakture = new List<Faktura>();
+    IList<Faktura> Selected { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Refresh();
+    }
+
+    async Task OpenDetail(int FakturaID)
+    {
+        NavigationManager.NavigateTo("FakturaKonstrukcije/" + FakturaID);
+    }
+
+    public async void ShowUpdateForm(Faktura faktura)
+    {
+        dynamic x = await DialogService.OpenAsync<Form>("Izmeni", new Dictionary<string, object>()
+        {
+            {"Id",faktura.ID}
+        });
+        if (x != null && x is bool)
+        {
+            if (x)
+            {
+                await Refresh();
+                NotificationService.Notify(NotificationSeverity.Success, "Uspešno", "Izmene uspešno sačuvane", 3000);
+            }
+            else
+            {
+                NotificationService.Notify(NotificationSeverity.Error, "Greška", "Greška prilikom izmene", 3000);
+            }
+        }
+
+    }
+
+    public async Task ShowInsertForm()
+    {
+        dynamic x = await DialogService.OpenAsync<Form>("Dodaj");
+        if (x != null && x is bool)
+        {
+            if (x)
+            {
+                await Refresh();
+                NotificationService.Notify(NotificationSeverity.Success, "Uspešno", "Uspešno sačuvan", 3000);
+            }
+            else
+            {
+                NotificationService.Notify(NotificationSeverity.Error, "Greška", "Greška prilikom dodavanja novog", 3000);
+            }
+        }
+    }
+
+    public async Task Refresh()
+    {
+        fakture = await Repository.Get();
+        StateHasChanged();
+        Selected = new List<Faktura>() { fakture.FirstOrDefault() };
+    }
+
+
+    protected async Task Delete(Faktura del)
+    {
+        var confirmResult = await DialogService.Confirm("Da li ste sigurni?", "Obriši", new ConfirmOptions() { OkButtonText = "Da", CancelButtonText = "Ne" });
+
+        if (confirmResult.HasValue && confirmResult.Value)
+        {
+            dynamic x = Repository.Delete(del);
+
+            if (x != null && x is bool)
+            {
+                if (x)
+                {
+                    await Refresh();
+                    NotificationService.Notify(NotificationSeverity.Success, "Uspešno", "Uspešno obrisan", 3000);
+                }
+                else
+                {
+                    NotificationService.Notify(NotificationSeverity.Error, "Greška", "Greška prilikom brisanja", 3000);
+                }
+            }
+        }
+    }
+
+}

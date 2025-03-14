@@ -1,0 +1,108 @@
+﻿@page "/Klijenti"
+@using Repository.Interface
+@using Model
+
+@inject NotificationService NotificationService
+@inject DialogService DialogService
+@inject IGenericRepository<Klijent> Repository
+
+<RadzenDataGrid Data="@klijenti" TItem="Klijent" AllowFiltering="true" FilterMode="FilterMode.Simple" AllowSorting="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive">
+    <HeaderTemplate>
+        <RadzenText TextStyle="TextStyle.DisplayH4">Klijenti</RadzenText>
+        <RadzenButton ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Button" Text="DODAJ" Icon="add" class="mb-2" Click="ShowInsertForm" />
+    </HeaderTemplate>
+    <Columns>
+        <RadzenDataGridColumn TItem="Klijent" Property="Naziv" Title="Naziv" Filterable="true" Width="150px" />
+        <RadzenDataGridColumn TItem="Klijent" Property="PIB" Title="PIB" Filterable="true" Width="100px" />
+        <RadzenDataGridColumn TItem="Klijent" Property="MaticniBR" Title="MaticniBR" Filterable="true" Width="100px" />
+        <RadzenDataGridColumn TItem="Klijent" Property="Ime" Title="Ime" Filterable="true" Width="100px" />
+        <RadzenDataGridColumn TItem="Klijent" Property="Prezime" Title="Prezime" Filterable="true" Width="100px" />
+        <RadzenDataGridColumn TItem="Klijent" Property="Telefon1" Title="Telefon1" Filterable="true" Width="100px" />
+        <RadzenDataGridColumn TItem="Klijent" Property="Telefon2" Title="Telefon2" Filterable="true" Width="100px" />
+        <RadzenDataGridColumn TItem="Klijent" Property="Napomena" Title="Napomena" Filterable="true" Width="100px" />
+        <RadzenDataGridColumn TItem="Klijent" Width="80px" TextAlign="TextAlign.End" Filterable="false" Sortable="false" Pickable="false">
+            <Template Context="context">
+                <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Primary" Icon="edit" Size="ButtonSize.ExtraSmall" Click="@(() => ShowUpdateForm(context))" />
+                <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Secondary" Icon="delete" Size="ButtonSize.ExtraSmall" Click="@(() => Delete(context))" />
+            </Template>
+        </RadzenDataGridColumn>
+    </Columns>
+</RadzenDataGrid>
+
+@code {
+    public List<Klijent> klijenti = new List<Klijent>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Refresh();
+    }
+
+    public async void ShowUpdateForm(Klijent klijent)
+    {
+        dynamic x = await DialogService.OpenAsync<Form>("Izmeni", new Dictionary<string, object>()
+        {
+            {"Id",klijent.ID}
+        });
+        if (x != null && x is bool)
+        {
+            if (x)
+            {
+                await Refresh();
+                NotificationService.Notify(NotificationSeverity.Success, "Uspešno", "Izmene uspešno sačuvane", 3000);
+            }
+            else
+            {
+                NotificationService.Notify(NotificationSeverity.Error, "Greška", "Greška prilikom izmene", 3000);
+            }
+        }
+
+    }
+
+    public async Task ShowInsertForm()
+    {
+        dynamic x = await DialogService.OpenAsync<Form>("Dodaj");
+        if (x != null && x is bool)
+        {
+            if (x)
+            {
+                await Refresh();
+                NotificationService.Notify(NotificationSeverity.Success, "Uspešno", "Uspešno sačuvan", 3000);
+            }
+            else
+            {
+                NotificationService.Notify(NotificationSeverity.Error, "Greška", "Greška prilikom dodavanja novog", 3000);
+            }
+        }
+    }
+
+    public async Task Refresh()
+    {
+        klijenti = await Repository.Get();
+        StateHasChanged();
+    }
+
+
+    protected async Task Delete(Klijent del)
+    {
+        var confirmResult = await DialogService.Confirm("Da li ste sigurni?", "Obriši", new ConfirmOptions() { OkButtonText = "Da", CancelButtonText = "Ne" });
+
+        if (confirmResult.HasValue && confirmResult.Value)
+        {
+            dynamic x = Repository.Delete(del);
+
+            if (x != null && x is bool)
+            {
+                if (x)
+                {
+                    await Refresh();
+                    NotificationService.Notify(NotificationSeverity.Success, "Uspešno", "Uspešno obrisan", 3000);
+                }
+                else
+                {
+                    NotificationService.Notify(NotificationSeverity.Error, "Greška", "Greška prilikom brisanja", 3000);
+                }
+            }
+        }
+    }
+
+}

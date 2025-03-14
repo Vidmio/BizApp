@@ -1,0 +1,29 @@
+﻿@inherits LayoutComponentBase
+@* @inject NavigationManager navManager *@
+<RadzenComponents @rendermode="InteractiveServer" />
+
+
+<PageTitle>BizAPP</PageTitle>
+
+<RadzenComponents />
+<NavMenu />
+
+<RadzenBody Expanded=true Style="margin-bottom:50px;">
+    <ChildContent>
+        <RadzenContentContainer>
+            @Body
+        </RadzenContentContainer>
+    </ChildContent>
+</RadzenBody>
+<RadzenFooter>
+    <ChildContent>
+        <div class="row">
+            <div class="text-start col-6">
+                BizAPP
+            </div>
+            <div class="text-end col-6">
+                <LoginDisplay />
+            </div>
+        </div>
+    </ChildContent>
+</RadzenFooter>
