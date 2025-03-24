@@ -14,9 +14,8 @@ namespace BizApp.Components.Model
         public DbSet<Klijent> Klijenti { get; set; }
         public DbSet<Faktura> Fakture { get; set; }
         public DbSet<Proizvod> Proizvodi { get; set; }
-        public DbSet<Konstrukcija> Konstrukcije { get; set; }
-        public DbSet<FakturaKonstrukcija> FakturaKonstrukcije { get; set; }
         public DbSet<Stavka> Stavke { get; set; }
+        //public DbSet<SlozeniProizvod> SlozeniProizvodi { get; set; }
 
     }
 }

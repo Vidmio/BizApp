@@ -3,25 +3,29 @@
 
 @inject NotificationService NotificationService
 @inject DialogService DialogService
-@inject IGenericRepository<FakturaKonstrukcija> Repository
-@inject IGenericRepository<Faktura> FakturaRepository
-@inject IGenericRepository<Konstrukcija> KonstrukcijaRepository
+@inject IStudentJson Repository
 
-<RadzenTemplateForm TItem="FakturaKonstrukcija" Data="@obj" Submit="SaveForm">
-    <RadzenFieldset Text="Osnovni podaci">
+<RadzenTemplateForm TItem="Student" Data="@obj" Submit="SaveForm">
+    <RadzenFieldset Text="Basic data J">
         <RadzenRow AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" RowGap="1rem">
             <RadzenColumn Size="12">
-                <RadzenFormField Text="Konstrukcija" Style="width: 100%">
+                <RadzenFormField Text="Ime" Style="width: 100%">
                     <ChildContent>
-                        <RadzenDropDown @bind-Value="obj.KonstrikcijaID" Data=@konstrukcija TextProperty="Naziv" ValueProperty="ID" />
+                        <RadzenTextBox Name="ImeTextBox" @bind-Value="obj.FirstName" />
                     </ChildContent>
+                    <Helper>
+                        <RadzenLengthValidator Component="ImeTextBox" Text="predugačako (max 50 karaktera)" Max="50" />
+                    </Helper>
                 </RadzenFormField>
             </RadzenColumn>
             <RadzenColumn Size="12">
-                <RadzenFormField Text="Faktura" Style="width: 100%">
+                <RadzenFormField Text="Prezime" Style="width: 100%">
                     <ChildContent>
-                        <RadzenDropDown @bind-Value="obj.FakturaID" Data=@faktura TextProperty="ID" ValueProperty="ID" />
+                        <RadzenTextBox Name="PrezimeTextBox" @bind-Value="obj.LastName" />
                     </ChildContent>
+                    <Helper>
+                        <RadzenLengthValidator Component="PrezimeTextBox" Text="predugačako (max 50 karaktera)" Max="50" />
+                    </Helper>
                 </RadzenFormField>
             </RadzenColumn>
         </RadzenRow>
@@ -42,10 +46,7 @@
 @code {
     [Parameter]
     public int ID { get; set; }
-    public FakturaKonstrukcija obj = new FakturaKonstrukcija();
-
-    protected IEnumerable<Konstrukcija> konstrukcija;
-    protected IEnumerable<Faktura> faktura;
+    public Student obj = new Student();
 
     protected override async Task OnInitializedAsync()
     {
@@ -53,8 +54,6 @@
         {
             obj = await Repository.Get(ID);
         }
-        konstrukcija = await KonstrukcijaRepository.Get();
-        faktura = await FakturaRepository.Get();
     }
 
     public void SaveForm()
@@ -66,7 +65,7 @@
         }
         else
         {
-            @*autor.ID = Guid.NewGuid();*@
+            // @*autor.ID = Guid.NewGuid();*@
             bool result = Repository.Add(obj);
             DialogService.Close(result);
         }

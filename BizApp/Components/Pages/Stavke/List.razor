@@ -9,10 +9,12 @@
 @inject NavigationManager NavigationManager
 
 <RadzenDataGrid Data="@stavke"
+                @ref="grid"
                 TItem="Stavka"
                 AllowFiltering="true"
                 FilterMode="FilterMode.Simple"
                 AllowSorting="true"
+                AllowVirtualization="true"
                 FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive">
     <HeaderTemplate>
         <RadzenText TextStyle="TextStyle.DisplayH4">Stavke fakture</RadzenText>
@@ -20,11 +22,17 @@
     </HeaderTemplate>
     <Columns>
 
-        <RadzenDataGridColumn TItem="Stavka" Property="ID" Title="ID" Filterable="true" Width="100px" />
+        <RadzenDataGridColumn TItem="Stavka" Property="@nameof(Stavka.ID)" Title="ID" Filterable="true" Width="100px" />
+        <RadzenDataGridColumn TItem="Stavka" Property="FakturaID" Title="FakturaID" Filterable="true" Width="100px" />
         <RadzenDataGridColumn TItem="Stavka" Property="Proizvod.Naziv" Title="Proizvod" Filterable="true" Width="100px" />
-        <RadzenDataGridColumn TItem="Stavka" Property="FakturaKonstrukcijaID" Title="FakturaKonstrukcijaID" Filterable="true" Width="100px" />
         <RadzenDataGridColumn TItem="Stavka" Property="Kolicina" Title="Kolicina" Filterable="true" Width="100px" />
-        <RadzenDataGridColumn TItem="Stavka" Property="Naručeno" Title="Naručeno" Filterable="true" Width="100px" />
+        <RadzenDataGridColumn TItem="Stavka" Property="Proizvod.JedinicnaCena" Title="Jedinicna Cena" Filterable="true" Width="100px" />
+        <RadzenDataGridColumn TItem="Stavka" Property="Cena" Title="Ukupna Cena" Filterable="true" Width="100px">
+            <FooterTemplate>
+                <b>Ukupno: @stavke.Sum(o => o.Cena)</b>
+            </FooterTemplate>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="Stavka" Property="Naruceno" Title="Naručeno" Filterable="true" Width="100px" />
         <RadzenDataGridColumn TItem="Stavka" Property="Montirano" Title="Montirano" Filterable="true" Width="100px" />
         <RadzenDataGridColumn TItem="Stavka" Width="80px" TextAlign="TextAlign.End" Filterable="false" Sortable="false" Pickable="false">
             <Template Context="context">
@@ -40,6 +48,8 @@
     [Parameter]
     public string? IDfk { get; set; }
     int IDInt = 0;
+
+    RadzenDataGrid<Stavka> grid;
 
     public List<Stavka> stavke = new List<Stavka>();
     //IList<Stavka> Selected { get; set; }
@@ -94,8 +104,12 @@
         Int32.TryParse(IDfk, out IDInt);
         if (IDInt != 0)
         {
-            stavke = stavke.Where(f => f.FakturaKonstrukcijaID == IDInt).ToList();
+            stavke = stavke.Where(f => f.FakturaID == IDInt).ToList();
             StateHasChanged();
+        }
+        foreach (var item in stavke)
+        {
+             item.Cena = item.Kolicina * item.Proizvod.JedinicnaCena;
         }
         StateHasChanged();
     }

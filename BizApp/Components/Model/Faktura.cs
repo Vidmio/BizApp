@@ -12,6 +12,6 @@ namespace BizApp.Components.Model
         [ForeignKey("KlijentID")]
         public  Klijent Klijent { get; set; }
 
-        public ICollection<FakturaKonstrukcija> FakturaKonstrikcija { get; set; }
+        public ICollection<Stavka> Stavka { get; set; }
     }
 }

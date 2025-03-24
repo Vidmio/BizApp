@@ -13,8 +13,8 @@
     </HeaderTemplate>
     <Columns>
         <RadzenDataGridColumn TItem="GrupaProizvod" Property="ID" Title="ID" Filterable="true" Width="50px" />
-        <RadzenDataGridColumn TItem="GrupaProizvod" Property="Naziv" Title="Naziv" Filterable="true" Width="200px" />
-        <RadzenDataGridColumn TItem="GrupaProizvod" Property="Sortiranje" Title="Sortiranje" Filterable="true" Width="200px" />
+        <RadzenDataGridColumn TItem="GrupaProizvod" Property="Naziv" Title="Naziv" Filterable="true" Width="100px" />
+    @*     <RadzenDataGridColumn TItem="GrupaProizvod" Property="Sortiranje" Title="Sortiranje" Filterable="true" Width="200px" /> *@
         <RadzenDataGridColumn TItem="GrupaProizvod" Width="80px" TextAlign="TextAlign.End" Filterable="false" Sortable="false" Pickable="false">
             <Template Context="context">
                 <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Primary" Icon="edit" Size="ButtonSize.ExtraSmall" Click="@(() => ShowUpdateForm(context))" />
