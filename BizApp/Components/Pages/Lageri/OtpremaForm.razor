@@ -1,0 +1,88 @@
+﻿﻿﻿@using Repository.Interface
+@using Model
+
+@inject NotificationService NotificationService
+@inject DialogService DialogService
+@inject IGenericRepository<Lager> Repository
+@inject IGenericRepository<Proizvod> ProizvodRepository
+
+<RadzenTemplateForm TItem="Lager" Data="@obj" Submit="SaveForm">
+    <RadzenFieldset Text="Osnovni podaci">
+        <RadzenRow AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" RowGap="1rem">
+            @* <RadzenColumn Size="12">
+                <RadzenFormField Text="Proizvod" Style="width: 100%">
+                    <ChildContent>
+                        <RadzenDropDown @bind-Value="obj.ProizvodID" Data=@proizvod TextProperty="Naziv" ValueProperty="ID" />
+                    </ChildContent>
+                </RadzenFormField>
+            </RadzenColumn>
+            <RadzenColumn Size="12">
+                <RadzenFormField Text="Kolicina" Style="width: 100%">
+                    <ChildContent>
+                        <RadzenNumeric @bind-Value="obj.Kolicina" />
+                    </ChildContent>
+                </RadzenFormField>
+            </RadzenColumn> *@
+            <RadzenColumn Size="12">
+                <RadzenFormField Text="Otprema se količina" Style="width: 100%">
+                    <ChildContent>
+                        <RadzenNumeric @bind-Value=@value />
+                    </ChildContent>
+                </RadzenFormField>
+            </RadzenColumn>
+        </RadzenRow>
+    </RadzenFieldset>
+
+    <RadzenRow JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Center" class="rz-mt-4">
+        <RadzenColumn Size="6" class="rz-text-align-end">
+            <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Primary" Icon="save" Text="Sačuvaj" />
+        </RadzenColumn>
+        <RadzenColumn Size="6" class="rz-text-align-start">
+            <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Light" Icon="cancel" Style="display: inline-block; margin-left: 10px;" Text="Poništi" Click="Close" />
+        </RadzenColumn>
+    </RadzenRow>
+
+</RadzenTemplateForm>
+
+
+@code {
+    [Parameter]
+    public int ID { get; set; }
+
+    int value;
+
+    public Lager obj = new Lager();
+
+    protected IEnumerable<Proizvod> proizvod;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (ID != 0)
+        {
+            obj = await Repository.Get(ID);
+        }
+        proizvod = await ProizvodRepository.Get();
+    }
+
+    public void SaveForm()
+    {
+        if (ID != 0)
+        {
+            obj.Kolicina = obj.Kolicina - value;
+            bool result = Repository.Update(obj);
+            DialogService.Close(result);
+        }
+        else
+        {
+            @*autor.ID = Guid.NewGuid();*@
+            bool result = Repository.Add(obj);
+            DialogService.Close(result);
+        }
+
+    }
+
+    public void Close()
+    {
+        DialogService.Close();
+    }
+}

@@ -16,6 +16,7 @@ namespace BizApp.Components.Model
         public DbSet<Proizvod> Proizvodi { get; set; }
         public DbSet<Stavka> Stavke { get; set; }
         //public DbSet<SlozeniProizvod> SlozeniProizvodi { get; set; }
+        public DbSet<Lager> Lageri { get; set; }
 
     }
 }

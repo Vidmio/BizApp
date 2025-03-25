@@ -28,6 +28,7 @@ builder.Services.AddScoped<IGenericRepository<Faktura>, FakturaRepository>();//o
 builder.Services.AddScoped<IGenericRepository<Proizvod>, ProizvodRepository>();//ovo je za GET sa include
 builder.Services.AddScoped<IGenericRepository<Stavka>, StavkaRepository>();
 builder.Services.AddScoped<IStudentJson, GenericRepositoryJson>();
+builder.Services.AddScoped<IGenericRepository<Lager>, LagerRepository>();
 
 builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("DataConnectionString"), sqlServerOptions => sqlServerOptions.CommandTimeout(120)),

@@ -20,5 +20,6 @@ namespace BizApp.Components.Model
         public GrupaProizvod GrupaProizvod { get; set; }
 
         public ICollection<Stavka> Stavka { get; set; }
+        public ICollection<Lager> Lager { get; set; }
     }
 }

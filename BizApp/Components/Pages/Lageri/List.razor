@@ -1,0 +1,156 @@
+﻿@page "/Lageri"
+@using Repository.Interface
+@using Model
+
+@inject NotificationService NotificationService
+@inject DialogService DialogService
+@inject IGenericRepository<Lager> Repository
+@inject NavigationManager NavigationManager
+
+<RadzenDataGrid Data="@lageri"
+                TItem="Lager"
+                AllowFiltering="true"
+                FilterMode="FilterMode.Simple"
+                AllowSorting="true"
+                AllowVirtualization="true"
+                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive">
+    <HeaderTemplate>
+        <RadzenText TextStyle="TextStyle.DisplayH4">Lager</RadzenText>
+        <RadzenButton ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Button" Text="DODAJ" Icon="add" class="mb-2" Click="ShowInsertForm" />
+    </HeaderTemplate>
+    <Columns>
+
+        <RadzenDataGridColumn TItem="Lager" Property="@nameof(Lager.ID)" Title="ID" Filterable="true" Width="100px" />
+        <RadzenDataGridColumn TItem="Lager" Property="Proizvod.Naziv" Title="Proizvod" Filterable="true" Width="100px" />
+        <RadzenDataGridColumn TItem="Lager" Property="@nameof(Lager.Kolicina)" Title="Količina" Filterable="true" Width="100px" />
+        <RadzenDataGridColumn TItem="Lager" Width="80px" TextAlign="TextAlign.End" Filterable="false" Sortable="false" Pickable="false">
+            <Template Context="context">
+                <RadzenButton ButtonType="ButtonType.Button" Text="prijem" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.ExtraSmall" Click="@(() => ShowPrijemForm(context))" />
+                <RadzenButton ButtonType="ButtonType.Button" Text="otprema" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.ExtraSmall" Click="@(() => ShowOtpremaForm(context))" />
+            </Template>
+        </RadzenDataGridColumn>
+    </Columns>
+</RadzenDataGrid>
+
+
+@code {
+    public List<Lager> lageri = new List<Lager>();
+    //IList<Stavka> Selected { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Refresh();
+    }
+
+    public async void ShowPrijemForm(Lager lager)
+    {
+        dynamic x = await DialogService.OpenAsync<PrijemForm>("Prijemnica", new Dictionary<string, object>()
+        {
+            {"Id",lager.ID}
+        });
+        if (x != null && x is bool)
+        {
+            if (x)
+            {
+                await Refresh();
+                NotificationService.Notify(NotificationSeverity.Success, "Uspešno", "Izmene uspešno sačuvane", 3000);
+            }
+            else
+            {
+                NotificationService.Notify(NotificationSeverity.Error, "Greška", "Greška prilikom izmene", 3000);
+            }
+        }
+
+    }
+
+    public async void ShowOtpremaForm(Lager lager)
+    {
+        dynamic x = await DialogService.OpenAsync<OtpremaForm>("Otpremnica", new Dictionary<string, object>()
+        {
+            {"Id",lager.ID}
+        });
+        if (x != null && x is bool)
+        {
+            if (x)
+            {
+                await Refresh();
+                NotificationService.Notify(NotificationSeverity.Success, "Uspešno", "Izmene uspešno sačuvane", 3000);
+            }
+            else
+            {
+                NotificationService.Notify(NotificationSeverity.Error, "Greška", "Greška prilikom izmene", 3000);
+            }
+        }
+
+    }
+
+
+    public async void ShowUpdateForm(Lager lager)
+    {
+        dynamic x = await DialogService.OpenAsync<Form>("Izmeni", new Dictionary<string, object>()
+        {
+            {"Id",lager.ID}
+        });
+        if (x != null && x is bool)
+        {
+            if (x)
+            {
+                await Refresh();
+                NotificationService.Notify(NotificationSeverity.Success, "Uspešno", "Izmene uspešno sačuvane", 3000);
+            }
+            else
+            {
+                NotificationService.Notify(NotificationSeverity.Error, "Greška", "Greška prilikom izmene", 3000);
+            }
+        }
+
+    }
+
+    public async Task ShowInsertForm()
+    {
+        dynamic x = await DialogService.OpenAsync<Form>("Dodaj");
+        if (x != null && x is bool)
+        {
+            if (x)
+            {
+                await Refresh();
+                NotificationService.Notify(NotificationSeverity.Success, "Uspešno", "Uspešno sačuvan", 3000);
+            }
+            else
+            {
+                NotificationService.Notify(NotificationSeverity.Error, "Greška", "Greška prilikom dodavanja novog", 3000);
+            }
+        }
+    }
+
+    public async Task Refresh()
+    {
+        lageri = await Repository.Get();
+        StateHasChanged();
+    }
+
+
+    protected async Task Delete(Lager del)
+    {
+        var confirmResult = await DialogService.Confirm("Da li ste sigurni?", "Obriši", new ConfirmOptions() { OkButtonText = "Da", CancelButtonText = "Ne" });
+
+        if (confirmResult.HasValue && confirmResult.Value)
+        {
+            dynamic x = Repository.Delete(del);
+
+            if (x != null && x is bool)
+            {
+                if (x)
+                {
+                    await Refresh();
+                    NotificationService.Notify(NotificationSeverity.Success, "Uspešno", "Uspešno obrisan", 3000);
+                }
+                else
+                {
+                    NotificationService.Notify(NotificationSeverity.Error, "Greška", "Greška prilikom brisanja", 3000);
+                }
+            }
+        }
+    }
+
+}
