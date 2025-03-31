@@ -82,7 +82,12 @@
 
     public async Task ShowInsertForm()
     {
-        dynamic x = await DialogService.OpenAsync<Form>("Dodaj");
+        //dynamic x = await DialogService.OpenAsync<Form>("Dodaj");
+        dynamic x = await DialogService.OpenAsync<Form>("Dodaj", new Dictionary<string, object>()
+        {
+            {"Id",0}
+            ,{"IdF",IDInt}
+        });
         if (x != null && x is bool)
         {
             if (x)

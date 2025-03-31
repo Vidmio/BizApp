@@ -19,6 +19,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+// Add authentication options //DODATO 
+builder.Services.AddAuthentication("Auth")
+    .AddCookie("Auth", options =>
+    {
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
+        options.SlidingExpiration = true;
+        options.LoginPath = "/login";
+    });
+builder.Services.AddCascadingAuthenticationState();
+
 builder.Services.AddRadzenComponents();
 builder.Services.AddScoped<IGenericRepository<Error>, GenericRepository<Error>>();
 builder.Services.AddScoped<IGenericRepository<Student>, GenericRepository<Student>>();
@@ -46,11 +56,21 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+//DODATO 
+app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseAntiforgery();
 
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+
+app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
+//app.UseEndpoints(endpoints =>
+//{
+//    endpoints.MapControllerRoute("default", "{controller}/{action}");
+//});
 
 app.Run();
