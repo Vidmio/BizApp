@@ -15,7 +15,7 @@ namespace BizApp.Components.Repository
         public override async Task<List<Stavka>> Get()
         {
             using var db = await _context.CreateDbContextAsync();
-            return await db.Stavke.Include("Proizvod").ToListAsync();
+            return await db.Stavke.Include(P => P.Proizvod).ThenInclude(Pa => Pa.GrupaProizvod).ToListAsync();
         }
     }
 }

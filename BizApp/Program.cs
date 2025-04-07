@@ -39,6 +39,7 @@ builder.Services.AddScoped<IGenericRepository<Proizvod>, ProizvodRepository>();/
 builder.Services.AddScoped<IGenericRepository<Stavka>, StavkaRepository>();
 builder.Services.AddScoped<IStudentJson, GenericRepositoryJson>();
 builder.Services.AddScoped<IGenericRepository<Lager>, LagerRepository>();
+builder.Services.AddScoped<IGenericRepository<Vozilo>, GenericRepository<Vozilo>>();
 
 builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("DataConnectionString"), sqlServerOptions => sqlServerOptions.CommandTimeout(120)),
@@ -68,6 +69,7 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
+//app.MapControllerRoute("default", "{controller}/{action}");
 //app.UseEndpoints(endpoints =>
 //{
 //    endpoints.MapControllerRoute("default", "{controller}/{action}");

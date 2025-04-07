@@ -17,23 +17,24 @@
                 AllowVirtualization="true"
                 FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive">
     <HeaderTemplate>
-        <RadzenText TextStyle="TextStyle.DisplayH4">Stavke fakture</RadzenText>
+        <RadzenText TextStyle="TextStyle.DisplayH4">Stavke fakture,faktura ID:@IDfk</RadzenText>
         <RadzenButton ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Button" Text="DODAJ" Icon="add" class="mb-2" Click="ShowInsertForm" />
     </HeaderTemplate>
     <Columns>
 
-        <RadzenDataGridColumn TItem="Stavka" Property="@nameof(Stavka.ID)" Title="ID" Filterable="true" Width="100px" />
-        <RadzenDataGridColumn TItem="Stavka" Property="FakturaID" Title="FakturaID" Filterable="true" Width="100px" />
+        <RadzenDataGridColumn TItem="Stavka" Property="@nameof(Stavka.ID)" Title="ID" Filterable="true" Width="50px" />
+        <RadzenDataGridColumn TItem="Stavka" Property="FakturaID" Title="FakturaID" Filterable="true" Width="80px" />
+        <RadzenDataGridColumn TItem="Stavka" Property="Proizvod.GrupaProizvod.Naziv" Title="Grupa" Filterable="true" Width="100px" />
         <RadzenDataGridColumn TItem="Stavka" Property="Proizvod.Naziv" Title="Proizvod" Filterable="true" Width="100px" />
-        <RadzenDataGridColumn TItem="Stavka" Property="Kolicina" Title="Kolicina" Filterable="true" Width="100px" />
-        <RadzenDataGridColumn TItem="Stavka" Property="Proizvod.JedinicnaCena" Title="Jedinicna Cena" Filterable="true" Width="100px" />
+        <RadzenDataGridColumn TItem="Stavka" Property="Kolicina" Title="Količina" Filterable="true" Width="100px" />
+        <RadzenDataGridColumn TItem="Stavka" Property="Proizvod.JedinicnaCena" Title="Jedinična Cena" Filterable="true" Width="100px" />
         <RadzenDataGridColumn TItem="Stavka" Property="Cena" Title="Ukupna Cena" Filterable="true" Width="100px">
             <FooterTemplate>
                 <b>Ukupno: @stavke.Sum(o => o.Cena)</b>
             </FooterTemplate>
         </RadzenDataGridColumn>
-        <RadzenDataGridColumn TItem="Stavka" Property="Naruceno" Title="Naručeno" Filterable="true" Width="100px" />
-        <RadzenDataGridColumn TItem="Stavka" Property="Montirano" Title="Montirano" Filterable="true" Width="100px" />
+        <RadzenDataGridColumn TItem="Stavka" Property="Naruceno" Title="Naručeno" Filterable="true" Width="80px" />
+        <RadzenDataGridColumn TItem="Stavka" Property="Montirano" Title="Montirano" Filterable="true" Width="80px" />
         <RadzenDataGridColumn TItem="Stavka" Width="80px" TextAlign="TextAlign.End" Filterable="false" Sortable="false" Pickable="false">
             <Template Context="context">
                 <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Primary" Icon="edit" Size="ButtonSize.ExtraSmall" Click="@(() => ShowUpdateForm(context))" />

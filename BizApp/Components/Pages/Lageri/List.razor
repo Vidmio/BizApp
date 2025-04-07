@@ -21,7 +21,9 @@
     <Columns>
 
         <RadzenDataGridColumn TItem="Lager" Property="@nameof(Lager.ID)" Title="ID" Filterable="true" Width="100px" />
-        <RadzenDataGridColumn TItem="Lager" Property="Proizvod.Naziv" Title="Proizvod" Filterable="true" Width="100px" />
+        <RadzenDataGridColumn TItem="Lager" Property="Proizvod.GrupaProizvod.Naziv" Title="Grupa" Filterable="true" Width="100px" />
+        <RadzenDataGridColumn TItem="Lager" Property="Proizvod.Naziv" Title="Proizvod" Filterable="true" Width="100px" /> 
+        <RadzenDataGridColumn TItem="Lager" Property="Proizvod.Opis" Title="Opis" Filterable="true" Width="100px" />
         <RadzenDataGridColumn TItem="Lager" Property="@nameof(Lager.Kolicina)" Title="Količina" Filterable="true" Width="100px" />
         <RadzenDataGridColumn TItem="Lager" Width="80px" TextAlign="TextAlign.End" Filterable="false" Sortable="false" Pickable="false">
             <Template Context="context">

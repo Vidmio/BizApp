@@ -1,0 +1,161 @@
+﻿@page "/vozila"
+@using Repository.Interface
+@using Model
+
+@inject NotificationService NotificationService
+@inject DialogService DialogService
+@inject IGenericRepository<Vozilo> Repository
+
+<div class="row" style="margin-bottom: 1rem">
+    <div class="col-12 col-md-6">
+        <RadzenText Text="Vozila" TextStyle="TextStyle.H4"  />
+    </div>
+    <div class="col-12 col-md-6 justify-content-start justify-content-md-end" style="display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem">
+        <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="Dodaj" Click="@ShowInsertForm" Variant="Variant.Flat" />
+    </div>
+</div>
+
+<RadzenDataGrid Data="@vozila" TItem="Vozilo" AllowFiltering="true" FilterMode="FilterMode.Simple" AllowSorting="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive">
+  @*   <HeaderTemplate>
+        <RadzenText TextStyle="TextStyle.DisplayH4">Vozila</RadzenText>
+        <RadzenButton ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Button" Text="ADD" Icon="add" class="mb-2" Click="ShowInsertForm" />
+    </HeaderTemplate> *@
+    <Columns>
+        <RadzenDataGridColumn TItem="Vozilo" Property="@nameof(Vozilo.ID)" Title="ID" Filterable="true" Width="50px" />
+        <RadzenDataGridColumn TItem="Vozilo" Property="@nameof(Vozilo.Proizvodjac)" Title="Proizvođač" Filterable="true" Width="100px" />
+        <RadzenDataGridColumn TItem="Vozilo" Property="@nameof(Vozilo.Model)" Title="Model" Filterable="true" Width="80px" />
+        <RadzenDataGridColumn TItem="Vozilo" Property="@nameof(Vozilo.Registracija)" Title="Registraciona oznaka" Filterable="true" Width="100px">
+            <HeaderTemplate>
+                Registraciona<br>oznaka
+            </HeaderTemplate>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="Vozilo" Property="@nameof(Vozilo.DatumIstekaRegistracije)" Title="Datum isteka registracije" Width="150px">
+            <HeaderTemplate>
+                Registracija<br>ističe
+            </HeaderTemplate>
+            <Template>
+                <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center">
+                    <RadzenBadge IsPill="true" BadgeStyle="BadgeStyle.Danger" Shade="Shade.Darker">
+                        <RadzenText TextStyle="TextStyle.Caption" Text="@($"{context.IstekRegistracijeUDanima}")" class="rz-color-white" />
+                    </RadzenBadge>
+                    <RadzenText TextStyle="TextStyle.Body2" Text="@($"{context.DatumIstekaRegistracije:d.M.yyyy.}")" class="rz-m-0" />
+                </RadzenStack>
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="Vozilo" Property="@nameof(Vozilo.DatumIstekaProtivPozarnogAparata)" Width="150px">
+            <HeaderTemplate>
+                PP aparat<br>ističe
+            </HeaderTemplate>
+            <Template>
+                <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center">
+                    <RadzenBadge IsPill="true" BadgeStyle="BadgeStyle.Danger" Shade="Shade.Darker">
+                        <RadzenText TextStyle="TextStyle.Caption" Text="@($"{context.IstekPPAparataUDanima}")" class="rz-color-white" />
+                    </RadzenBadge>
+                    <RadzenText TextStyle="TextStyle.Body2" Text="@($"{context.DatumIstekaProtivPozarnogAparata:d.M.yyyy.}")" class="rz-m-0" />
+                </RadzenStack>
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="Vozilo" Property="@nameof(Vozilo.DatumIstekaProtivPozarnogAparata)" Width="150px">
+            <HeaderTemplate>
+                Prva pomoć<br>ističe
+            </HeaderTemplate>
+            <Template>
+                <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center">
+                    <RadzenBadge IsPill="true" BadgeStyle="BadgeStyle.Danger" Shade="Shade.Darker">
+                        <RadzenText TextStyle="TextStyle.Caption" Text="@($"{context.IstekPrvePomociUDanima}")" class="rz-color-white" />
+                    </RadzenBadge>
+                    <RadzenText TextStyle="TextStyle.Body2" Text="@($"{context.DatumIstekaPrvePomoci:d.M.yyyy.}")" class="rz-m-0" />
+                </RadzenStack>
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="Vozilo" Property="@nameof(Vozilo.ProtivProzarniAparat)" Title="PP Aparat" Filterable="true" Width="100px" />
+        <RadzenDataGridColumn TItem="Vozilo" Property="@nameof(Vozilo.PrvaPomoc)" Title="PrvaPomoc" Filterable="true" Width="100px"/>
+        <RadzenDataGridColumn TItem="Vozilo" Property="@nameof(Vozilo.PrvaPomoc)" Title="Prva Pomoc" Filterable="true" Width="100px"/>
+
+
+        <RadzenDataGridColumn TItem="Vozilo" Width="80px" TextAlign="TextAlign.End" Filterable="false" Sortable="false" Pickable="false">
+            <Template Context="context">
+                <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Primary" Icon="edit" Size="ButtonSize.ExtraSmall" Click="@(() => ShowUpdateForm(context))" />
+                <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Secondary" Icon="delete" Size="ButtonSize.ExtraSmall" Click="@(() => Delete(context))" />
+            </Template>
+        </RadzenDataGridColumn>
+    </Columns>
+</RadzenDataGrid>
+
+@code {
+    public List<Vozilo> vozila = new List<Vozilo>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Refresh();
+    }
+
+    public async void ShowUpdateForm(Vozilo vozilo)
+    {
+        dynamic x = await DialogService.OpenAsync<Form>("Edit", new Dictionary<string, object>()
+        {
+            {"Id",vozilo.ID}
+        });
+        if (x != null && x is bool)
+        {
+            if (x)
+            {
+                await Refresh();
+                NotificationService.Notify(NotificationSeverity.Success, "Uspešno", "Izmene uspešno sačuvane", 3000);
+            }
+            else
+            {
+                NotificationService.Notify(NotificationSeverity.Error, "Greška", "Greška prilikom izmene", 3000);
+            }
+        }
+
+    }
+
+    public async Task ShowInsertForm()
+    {
+        dynamic x = await DialogService.OpenAsync<Form>("New");
+        if (x != null && x is bool)
+        {
+            if (x)
+            {
+                await Refresh();
+                NotificationService.Notify(NotificationSeverity.Success, "Uspešno", "Uspešno sačuvan", 3000);
+            }
+            else
+            {
+                NotificationService.Notify(NotificationSeverity.Error, "Greška", "Greška prilikom dodavanja novog", 3000);
+            }
+        }
+    }
+
+    public async Task Refresh()
+    {
+        vozila = await Repository.Get();
+        StateHasChanged();
+    }
+
+
+    protected async Task Delete(Vozilo del)
+    {
+        var confirmResult = await DialogService.Confirm("Da li ste sigurni?", "Obriši", new ConfirmOptions() { OkButtonText = "Da", CancelButtonText = "Ne" });
+
+        if (confirmResult.HasValue && confirmResult.Value)
+        {
+            dynamic x = Repository.Delete(del);
+
+            if (x != null && x is bool)
+            {
+                if (x)
+                {
+                    await Refresh();
+                    NotificationService.Notify(NotificationSeverity.Success, "Uspešno", "Uspešno obrisan", 3000);
+                }
+                else
+                {
+                    NotificationService.Notify(NotificationSeverity.Error, "Greška", "Greška prilikom brisanja", 3000);
+                }
+            }
+        }
+    }
+
+}

@@ -16,7 +16,7 @@ namespace BizApp.Components.Repository
         public override async Task<List<Faktura>> Get()
         {
             using var db = await _context.CreateDbContextAsync();
-            return await db.Fakture.Include("Klijent").ToListAsync();
+            return await db.Fakture.Include(P => P.Klijent).ToListAsync();
         }
     }
 }
